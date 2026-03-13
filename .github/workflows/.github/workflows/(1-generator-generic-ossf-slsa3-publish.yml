@@ -1,0 +1,60 @@
+# documentation.
+
+# This workflow lets you generate SLSA provenance file for your project.
+# The generation satisfies level 3 for the provenance requirements - see https://slsa.dev/spec/v1.0/requirements
+# The generation satisfies level 3 for the provenance requirements - see https://slsa.dev/spec/v0.1/requirements
+# The project is an initiative of the OpenSSF (openssf.org) and is developed at
+# https://github.com/slsa-framework/slsa-github-generator.
+# The provenance file can be verified using https://github.com/slsa-framework/slsa-verifier.
+@@ -23,9 +23,7 @@ jobs:
+digests: ${{ steps.hash.outputs.digests }}
+
+steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/checkout@v3
+
+# ========================================================
+#
+@@ -37,7 +35,6 @@ jobs:
+           # These are some amazing artifacts.
+           echo "artifact1" > artifact1
+           echo "artifact2" > artifact2
+
+     # ========================================================
+#
+# Step 2: Add a step to generate the provenance subjects
+@@ -50,22 +47,10 @@ jobs:
+id: hash
+run: |
+         set -euo pipefail
+
+         # List the artifacts the provenance will refer to.
+         files=$(ls artifact*)
+          files=$(find . -maxdepth 1 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 2 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 3 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 4 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 5 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 6 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 7 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 14 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 15 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 16 -name 'artifact*' -type f)
+          files=$(find . -maxdepth 259 -name 'artifact*' -type f)
+
+
+         # Generate the subjects (base64 encoded).
+          echo "digests=$(sha256sum $files | base64 -w0)" >> "${GITHUB_OUTPUT}"
+
+          echo "hashes=$(sha256sum $files | base64 -w0)" >> "${GITHUB_OUTPUT}"
+ provenance:
+needs: [build]
+permissions:
+@@ -75,4 +60,4 @@ jobs:
+uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
+with:
+base64-subjects: "${{ needs.build.outputs.digests }}"
+      upload-assets: ${{ github.event_name == 'release' }} # Optional: Upload to a new release
+      upload-assets: true # Optional: Upload to a new release
